@@ -1,6 +1,5 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
-source "/data/SetupHelper/CommonResources"
 if [ $scriptAction == 'NONE' ] ; then
 	echo 'Integrates GS into Victron'
 	standardActionPrompt
@@ -9,7 +8,7 @@ if [ $scriptAction == 'INSTALL' ] ; then
 	mkdir /opt/gs
 	cp *.py /opt/gs/
 
-	rsync -a /opt/victronenergy/service-templates/openssh /service/venus-gs
+	rsync -a /opt/victronenergy/service-templates/openssh/ /service/venus-gs/
 	cp service.run /service/venus-gs/run
 fi
 if [ $scriptAction == 'UNINSTALL' ] ; then
