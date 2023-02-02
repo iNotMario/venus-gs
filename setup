@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source "/data/SetupHelper/CommonResources"
 if [ $scriptAction == 'INSTALL' ] ; then
 	mkdir /opt/gs
 	cp *.py /opt/gs/
@@ -8,4 +8,6 @@ if [ $scriptAction == 'INSTALL' ] ; then
 	cp service.run /service/venus-gs/run
 fi
 if [ $scriptAction == 'UNINSTALL' ] ; then
+	echo rm -rf /opt/gs
+	echo rm -rf /service/venus-gs
 fi
