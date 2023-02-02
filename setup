@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $scriptAction == 'INSTALL' ] ; then
+	mkdir /opt/gs
+	cp *.py /opt/gs/
+
+	rsync -a /opt/victronenergy/service-templates/openssh /service/venus-gs
+	cp service.run /service/venus-gs/run
+fi
+if [ $scriptAction == 'UNINSTALL' ] ; then
+fi
