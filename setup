@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")" || exit 1
 source "/data/SetupHelper/CommonResources"
 if [ $scriptAction == 'NONE' ] ; then
 	echo 'Integrates GS into Victron'
