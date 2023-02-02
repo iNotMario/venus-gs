@@ -1,4 +1,4 @@
 #!/bin/sh
-echo "*** starting vrmlogger ***"
+echo "*** starting Genetry Solar Service ***"
 exec 2>&1
 exec softlimit -d 100000000 -s 1000000 -a 100000000 /opt/gs/gsdevice.py http://1.5.5.23
