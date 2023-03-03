@@ -162,10 +162,13 @@ def update():
 		f_ou = stats['outputs']['outHZ']
 		v_ou = stats['outputs']['outV']
 		i_ou = stats['outputs']['outA']
-		p_ou = v_ou * i_ou
+		p_ou = stats['outputs']['outW']
 
+		e_tf = stats['outputs']['xfEFF'] / 100
+		i_tf = stats['inputs']['xfA']
+		
 		v_dc = stats['inputs']['battV']
-		i_dc = -stats['inputs']['xfA'] * (v_ou / v_dc)
+		i_dc = (-i_tf / e_tf) * (v_ou / v_dc)
 		#i_dc = (p_in - p_ou) / v_dc
 
 		p_total = stats['stats']['KWh']
