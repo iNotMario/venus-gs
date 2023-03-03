@@ -169,6 +169,7 @@ def update():
 		
 		v_dc = stats['inputs']['battV']
 		i_dc = (-i_tf / e_tf) * (v_ou / v_dc)
+		p_dc = v_dc * i_dc
 		#i_dc = (p_in - p_ou) / v_dc
 
 		p_total = stats['stats']['KWh']
@@ -228,6 +229,7 @@ def update():
 
 			inverterP.set_path('/Dc/0/Voltage', Value(v_dc, '%.2f V'))
 			inverterP.set_path('/Dc/0/Current', Value(i_dc, '%.2f A'))
+			inverterP.set_path('/Dc/0/Power', Value(p_dc, '%.2f W'))
 
 			inverterP.set_path('/Energy/InverterToAcOut', Value(p_total, '%.6f kWh'))
 
