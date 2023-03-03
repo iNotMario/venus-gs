@@ -165,7 +165,8 @@ def update():
 		p_ou = v_ou * i_ou
 
 		v_dc = stats['inputs']['battV']
-		i_dc = (p_in - p_ou) / v_dc
+        i_dc = stats['inputs']['xfA']
+		#i_dc = (p_in - p_ou) / v_dc
 
 		p_total = stats['stats']['KWh']
 
