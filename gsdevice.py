@@ -168,7 +168,10 @@ def update():
 		i_tf = stats['inputs']['xfA']
 		
 		v_dc = stats['inputs']['battV']
-		i_dc = (-i_tf / e_tf) * (v_ou / v_dc)
+		try:
+			i_dc = (-i_tf / e_tf) * (v_ou / v_dc)
+		except:
+			i_dc = 0
 		p_dc = v_dc * i_dc
 		#i_dc = (p_in - p_ou) / v_dc
 
