@@ -168,12 +168,8 @@ def update():
 		i_tf = stats['inputs']['xfA']
 		
 		v_dc = stats['inputs']['battV']
-		try:
-			i_dc = (-i_tf / e_tf) * (v_ou / v_dc)
-		except:
-			i_dc = 0
+		i_dc = (i_in - i_ou) * (v_ou / v_dc)
 		p_dc = v_dc * i_dc
-		#i_dc = (p_in - p_ou) / v_dc
 
 		p_total = stats['stats']['KWh']
 
