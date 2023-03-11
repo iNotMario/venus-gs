@@ -4,7 +4,9 @@ import dbus
 import dbus.mainloop.glib
 import time
 import logging
-import requests              
+import requests
+import datetime
+
 
 from gi.repository import GLib                       
 dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -16,6 +18,25 @@ logging.getLogger().setLevel(logging.INFO)
 
 baseurl = sys.argv[1]                                                                                                       
 baseinstance = int(sys.argv[2]) if len(sys.argv) > 2 else 50
+
+class Unitizer:
+    total = 0
+    time_unit = datetime.timedelta(milliseconds = 1000)
+    time_last = datetime.datetime.now()
+    def __init__(self, u, t = 0):
+        self.time_unit = u
+        self.total = t
+    def get(self):
+        return self.total
+    def add(self, v):
+        ct = datetime.datetime.now()
+        lt = self.time_last
+        dt = ct - lt
+        du = dt.total_seconds() / self.time_unit.total_seconds()
+        self.total += v * du
+        
+        self.time_last = ct 
+        return self.get()
 
 class Roll:
 	def __init__(self, n, v=None):
@@ -151,6 +172,10 @@ inverter.p_in = Roll(rn)
 inverter.p_ou = Roll(rn)
 inverter.i_dc = Roll(rn)
 
+inverter.d_io = Unitizer(datetime.timedelta(hours = 1))                                                                                                    
+inverter.d_iv = Unitizer(datetime.timedelta(hours = 1))                                                                      
+inverter.d_vo = Unitizer(datetime.timedelta(hours = 1))
+
 def update():
 	try:
 		stats = requests.get(url=baseurl + '/stats.json', timeout = 10).json()
@@ -213,7 +238,7 @@ def update():
 			inverterP.set_path('/ModeIsAdjustable', 1)
 			inverterP.set_path('/Ac/ActiveIn/CurrentLimitIsAdjustable', 1)
 
-			inverterP.set_path('/Mode', m_ve) ##VE Translated Mode
+			inverterP.set_path('/Mode', m_ve) ##VE Translated Mode, 1,2,3,4 => Charge, Inverter, Float, Passthru
 			inverterP.set_path('/State', s_ve) ##VE Translated State
 
 			inverterP.set_path('/Ac/Out/L1/V', Value(v_ou, '%.2f V'))
@@ -230,7 +255,24 @@ def update():
 			inverterP.set_path('/Dc/0/Current', Value(i_dc, '%.2f A'))
 			inverterP.set_path('/Dc/0/Power', Value(p_dc, '%.2f W'))
 
-			inverterP.set_path('/Energy/InverterToAcOut', Value(p_total, '%.6f kWh'))
+			#inverterP.set_path('/Energy/InverterToAcOut', Value(p_total, '%.6f kWh'))
+
+			d_io = p_ou  - max(0, -p_dc)
+			d_iv = p_in  - p_ou
+			d_vo = p_ou  - p_in
+
+			inverter.d_io.add(max(0, d_io))
+			inverter.d_iv.add(max(0, d_iv))
+			inverter.d_vo.add(max(0, d_vo))
+
+			inverterP.set_path('/Debug/d_io', Value(d_io, '%f W'))
+			inverterP.set_path('/Debug/d_iv', Value(d_iv, '%f W'))
+			inverterP.set_path('/Debug/d_vo', Value(d_vo, '%f W'))
+			
+
+			inverterP.set_path('/Energy/AcIn1ToAcOut',    Value(inverter.d_io.get() / 1000, '%.6f kWh'))
+			inverterP.set_path('/Energy/AcIn1ToInverter', Value(inverter.d_iv.get() / 1000, '%.6f kWh'))
+			inverterP.set_path('/Energy/InverterToAcOut', Value(inverter.d_vo.get() / 1000, '%.6f kWh'))
 
 		temperature.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
 
