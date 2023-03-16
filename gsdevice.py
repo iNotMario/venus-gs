@@ -220,15 +220,15 @@ def update():
 		a_alarms_bits = { ##Bearing in mind this is TCP based... if carrier is lost from outage, we can't access it...
 			0  : ('/Alarms/TemperatureSensor', 1), #"Xfrmr Temp",
 			1  : ('/Alarms/TemperatureSensor', 1), #"MOS Temp",
-			2  : ('/Alarms/Overload',          1), #"Overload",	
+			2  : ('/Alarms/L1/Overload',       1), #"Overload",	
 			3  : ('/Alarms/VoltageSensor',     1), #"Output Volt",
 			4  : ('/Alarms/LowBattery',        1), #"Batt. Low",
 			5  : ('/Alarms/VoltageSensor',     1), #"Batt. High",
 			6  : ('/Alarms/PhaseRotation',     1), #"Input Freq.",
-			7  : ('/Alarms/VoltageSensor',     1), #"Input Volt",
+			7  : ('/Alarms/GridLost',          1), #"Input Volt",
 			8  : ('/Alarms/HighTemperature',   2), #"OVERHEAT",
-			9  : ('/Alarms/Overload',          2), #"OVERLOAD LO",
-			10 : ('/Alarms/Overload',          2), #"OVERLOAD HI",
+			9  : ('/Alarms/L1/Overload',       2), #"OVERLOAD LO",
+			10 : ('/Alarms/L1/Overload',       2), #"OVERLOAD HI",
 		}
 		for b, (path, value) in a_alarms_bits.items(): a_alarms[path] = value if (a_alarms_alms & 1<<b) else 0
 
