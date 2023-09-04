@@ -232,7 +232,7 @@ def update():
 		}
 		for b, (path, value) in a_alarms_bits.items(): a_alarms[path] = value if (a_alarms_alms & 1<<b) else 0
 
-		with inverter as inverterP:
+		with inverter as inverterP, fanA as fanAP, fanB as fanBP, fanC as fanCP, fanD as fanDP, temperature as temperatureP:
 			for     path, value  in a_alarms.items():      inverterP.set_path(path, value) #Dictionary prevents spamming dbus...
 
 			inverterP.set_path('/ModeIsAdjustable', 1)
@@ -273,10 +273,7 @@ def update():
 			inverterP.set_path('/Energy/AcIn1ToAcOut',    Value(inverter.d_io.get() / 1000, '%.6f kWh'))
 			inverterP.set_path('/Energy/AcIn1ToInverter', Value(inverter.d_iv.get() / 1000, '%.6f kWh'))
 			inverterP.set_path('/Energy/InverterToAcOut', Value(inverter.d_vo.get() / 1000, '%.6f kWh'))
-
-		temperature.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
-
-		with fanA as fanAP, fanB as fanBP, fanC as fanCP, fanD as fanDP:
+            
 			fanAP.set_path('/Level', f_fa)
 			fanAP.set_path('/Temperature', ftoc(t_tta))
 			fanBP.set_path('/Level', f_fb)
@@ -285,6 +282,8 @@ def update():
 			fanCP.set_path('/Temperature', ftoc(t_tma))
 			fanDP.set_path('/Level', f_fd)
 			fanDP.set_path('/Temperature', ftoc(t_tmb))
+
+            temperatureP.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
 
 	except IOError as e:
 		print('Unable to get data... %s' % str(e))
