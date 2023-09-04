@@ -234,6 +234,7 @@ def update():
 
 		with inverter as inverterP, fanA as fanAP, fanB as fanBP, fanC as fanCP, fanD as fanDP, temperature as temperatureP:
 			for     path, value  in a_alarms.items():      inverterP.set_path(path, value) #Dictionary prevents spamming dbus...
+            temperatureP.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
 
 			inverterP.set_path('/ModeIsAdjustable', 1)
 			inverterP.set_path('/Ac/ActiveIn/CurrentLimitIsAdjustable', 1)
@@ -282,8 +283,6 @@ def update():
 			fanCP.set_path('/Temperature', ftoc(t_tma))
 			fanDP.set_path('/Level', f_fd)
 			fanDP.set_path('/Temperature', ftoc(t_tmb))
-
-            temperatureP.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
 
 	except IOError as e:
 		print('Unable to get data... %s' % str(e))
