@@ -234,7 +234,7 @@ def update():
 
 		with inverter as inverterP, fanA as fanAP, fanB as fanBP, fanC as fanCP, fanD as fanDP, temperature as temperatureP:
 			for     path, value  in a_alarms.items():      inverterP.set_path(path, value) #Dictionary prevents spamming dbus...
-            		temperatureP.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
+			temperatureP.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
 
 			inverterP.set_path('/ModeIsAdjustable', 1)
 			inverterP.set_path('/Ac/ActiveIn/CurrentLimitIsAdjustable', 1)
@@ -270,7 +270,6 @@ def update():
 			inverterP.set_path('/Debug/d_iv', Value(d_iv, '%f W'))
 			inverterP.set_path('/Debug/d_vo', Value(d_vo, '%f W'))
 			
-
 			inverterP.set_path('/Energy/AcIn1ToAcOut',    Value(inverter.d_io.get() / 1000, '%.6f kWh'))
 			inverterP.set_path('/Energy/AcIn1ToInverter', Value(inverter.d_iv.get() / 1000, '%.6f kWh'))
 			inverterP.set_path('/Energy/InverterToAcOut', Value(inverter.d_vo.get() / 1000, '%.6f kWh'))
