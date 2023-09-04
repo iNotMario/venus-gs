@@ -274,7 +274,7 @@ def update():
 			inverterP.set_path('/Energy/AcIn1ToAcOut',    Value(inverter.d_io.get() / 1000, '%.6f kWh'))
 			inverterP.set_path('/Energy/AcIn1ToInverter', Value(inverter.d_iv.get() / 1000, '%.6f kWh'))
 			inverterP.set_path('/Energy/InverterToAcOut', Value(inverter.d_vo.get() / 1000, '%.6f kWh'))
-            
+
 			fanAP.set_path('/Level', f_fa)
 			fanAP.set_path('/Temperature', ftoc(t_tta))
 			fanBP.set_path('/Level', f_fb)
