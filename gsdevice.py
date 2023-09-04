@@ -282,7 +282,6 @@ def update():
 			fanCP.set_path('/Temperature', ftoc(t_tma))
 			fanDP.set_path('/Level', f_fd)
 			fanDP.set_path('/Temperature', ftoc(t_tmb))
-
             temperatureP.set_path('/Temperature', ftoc(max(t_tta, t_ttb, t_tma, t_tmb)))
 
 	except IOError as e:
