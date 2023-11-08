@@ -105,7 +105,9 @@ class Device:
 def inverter_command(cmd):
 	if cmd is None: return False
 	logging.info('Inverter Command: %s', cmd)
-	return requests.post(baseurl + '/cmd', data = {'cmd': cmd}, timeout = 5)
+	x = requests.post(baseurl + '/cmd', data = {'cmd': cmd}, timeout = 5)
+	time.sleep(1)
+	return x
 
 def ftoc(val):
 	return (val - 32)  * (5/9)
@@ -157,7 +159,7 @@ inverter.set_path('/Ac/ActiveIn/CurrentLimit', 25, set_input_limitI)
 def set_mode(path, mode):
 	try:
 		logging.debug('Informed to set mode... %s', mode)
-		cmd = ['ATSac','CHGoff'] if mode == 4 else ['ATSac','CHGflt'] if mode == 3 else ['ATSinv'] if mode == 2 else ['ATSac','CHGblk'] if mode == 1 else None
+		cmd = ['ATSinv','PWRoff'] if mode == 4 else ['ATSac','CHGoff'] if mode == 3 else ['ATSinv','PWRon'] if mode == 2 else ['ATSac','CHGblk'] if mode == 1 else None
 		status = [inverter_command(x) for x in cmd]
 		if cmd is not None:
 			inverter.set_path('/Mode', mode)
@@ -212,8 +214,14 @@ def update():
 		f_inv = stats['stats']['inFLAGS']
 		m_ats = s_inv == 1
 		m_chg = 4 if not f_inv & 0x10 else 3 if f_inv & 0x20 else 1
+
+		##With Off meaning Passthru
 		m_ve = 2 if not m_ats else m_chg
 		s_ve = 3 if m_ve == 1 else 9 if m_ve == 2 else 5 if m_ve == 3 else 8 if m_ve == 4 else None
+
+		##With Off meaning Off
+		m_ve = 4 if s_inv == 0x3 else 2 if s_inv == 0x2 else 3 if s_inv == 0x1 and m_chg == 4 else 1 if s_inv == 0x1 else None
+		s_ve = 3 if m_ve == 1 else 9 if m_ve == 2 else 8 if m_ve == 3 else 0 if m_ve == 4 else None
 
 		a_alarms = {}
 		a_alarms_alms = stats['errors']['Alms']
@@ -239,8 +247,14 @@ def update():
 			inverterP.set_path('/ModeIsAdjustable', 1)
 			inverterP.set_path('/Ac/ActiveIn/CurrentLimitIsAdjustable', 1)
 
-			inverterP.set_path('/Mode', m_ve) ##VE Translated Mode, 1,2,3,4 => Charge, Inverter, Float, Passthru
-			inverterP.set_path('/State', s_ve) ##VE Translated State
+			inverterP.set_path('/Mode', m_ve)  ##VE Translated Mode, 1,2,3,4 => Charge Only, Inverter Only, On, Off
+			inverterP.set_path('/State', s_ve) ##VE Translated State, 0=Off;1=Low Power;2=Fault;3=Bulk;4=Absorption;5=Float;6=Storage;7=Equalize;8=Passthru;9=Inverting;10=Power assist;11=Power supply
+
+			inverterP.set_path('/Debug/m_ats', m_ats)
+			inverterP.set_path('/Debug/m_chg', m_chg)
+			inverterP.set_path('/Debug/m_ve', m_ve)
+			inverterP.set_path('/Debug/s_inv', s_inv)
+			inverterP.set_path('/Debug/f_inv', f_inv)
 
 			inverterP.set_path('/Ac/Out/L1/V', Value(v_ou, '%.2f V'))
 			inverterP.set_path('/Ac/Out/L1/I', Value(i_ou, '%.2f A'))
